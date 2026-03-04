@@ -1,0 +1,34 @@
+# .gitconfig-template — Reference Git configuration
+# Copy to ~/.gitconfig and adjust user details as needed.
+
+[user]
+    name = Daniel
+    email = dmwator11@gmail.com
+
+[core]
+    editor = vim
+    autocrlf = input
+    whitespace = trailing-space,space-before-tab
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = current
+
+[alias]
+    s     = status -sb
+    lg    = log --oneline --graph --decorate --all
+    amend = commit --amend --no-edit
+    undo  = reset HEAD~1 --mixed
+    co    = checkout
+    br    = branch
+    ci    = commit
+    last  = log -1 HEAD --stat
+    diff-staged = diff --cached
+
+[color]
+    ui = auto
