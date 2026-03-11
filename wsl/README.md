@@ -82,3 +82,27 @@ git lg                # alias for: pretty log
 jq --version
 docker run hello-world
 ```
+
+## Additional Setup Scripts
+
+### Mount pCloud Drive
+
+pCloud uses a virtual drive (default `P:`) that WSL doesn't auto-mount. This script mounts it and shows how to persist via fstab.
+
+```bash
+sudo ./wsl/mount-pcloud.sh        # Mounts P: at /mnt/p
+sudo ./wsl/mount-pcloud.sh Q      # Custom drive letter
+```
+
+After mounting, pCloud files are at `/mnt/p/`. Useful for cross-workspace data portability.
+
+### VS Code Extensions
+
+Installs a curated set of extensions for the WSL dev workflow (Java/Spring, Docker, Kafka, Git, YAML).
+
+```bash
+./wsl/setup-vscode.sh             # Install all extensions
+./wsl/setup-vscode.sh --list-only # Preview what would be installed
+```
+
+Requires VS Code to be connected to WSL first (the `code` CLI must be available).

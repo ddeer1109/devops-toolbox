@@ -167,9 +167,31 @@ else
     warn "Docker CLI not found — enable Docker Desktop WSL integration (see README.md Level 1)"
 fi
 
+# --- 6. VS Code extensions ---
+if command -v code &>/dev/null; then
+    info "VS Code CLI detected — run './wsl/setup-vscode.sh' to install extensions"
+else
+    warn "VS Code CLI not found — connect to WSL from VS Code first, then run setup-vscode.sh"
+fi
+
+# --- 7. pCloud mount ---
+echo ""
+echo ">>> pCloud drive mount:"
+if mount | grep -q "/mnt/p"; then
+    info "pCloud already mounted at /mnt/p"
+elif [[ -d "/mnt/p" ]]; then
+    warn "Mount point /mnt/p exists but not mounted — run: sudo ./wsl/mount-pcloud.sh"
+else
+    warn "pCloud not mounted — run: sudo ./wsl/mount-pcloud.sh"
+fi
+
 echo ""
 if [[ "$INSTALL_ZSH" == true ]]; then
     info "Bootstrap complete! Restart your terminal to use Zsh."
 else
     info "Bootstrap complete!"
 fi
+echo ""
+echo "Next steps:"
+echo "  sudo ./wsl/mount-pcloud.sh       # Mount pCloud P: drive"
+echo "  ./wsl/setup-vscode.sh            # Install VS Code extensions"
