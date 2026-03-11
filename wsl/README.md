@@ -85,6 +85,34 @@ docker run hello-world
 
 ## Additional Setup Scripts
 
+### Java (JDK 17 + 21 + Maven)
+
+Installs OpenJDK from Ubuntu repos with `update-alternatives` for version switching.
+
+```bash
+sudo ./wsl/setup-java.sh                    # JDK 17 (default) + 21 + Maven
+sudo ./wsl/setup-java.sh --jdk 21           # Only JDK 21
+sudo ./wsl/setup-java.sh --default 21       # Both JDKs, default to 21
+```
+
+Switch versions any time:
+```bash
+sudo update-alternatives --config java
+```
+
+### Python (pip + venv + pipx)
+
+Ubuntu 24.04 ships Python 3.12 but without pip. This adds the dev tooling.
+
+```bash
+sudo ./wsl/setup-python.sh
+```
+
+Each project should use its own venv:
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+```
+
 ### Mount pCloud Drive
 
 pCloud uses a virtual drive (default `P:`) that WSL doesn't auto-mount. This script mounts it and shows how to persist via fstab.
@@ -106,3 +134,13 @@ Installs a curated set of extensions for the WSL dev workflow (Java/Spring, Dock
 ```
 
 Requires VS Code to be connected to WSL first (the `code` CLI must be available).
+
+### Windows Side (PowerShell)
+
+Installs dev tools on the Windows host via `winget` (JDK, Python, VS Code, Docker Desktop, pCloud, Git, Maven).
+
+```powershell
+# Run in PowerShell as Administrator
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\wsl\setup-windows.ps1
+```

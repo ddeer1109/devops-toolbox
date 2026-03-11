@@ -185,6 +185,29 @@ else
     warn "pCloud not mounted — run: sudo ./wsl/mount-pcloud.sh"
 fi
 
+# --- 8. Java check ---
+echo ""
+echo ">>> Java:"
+if command -v java &>/dev/null; then
+    info "Java found — $(java -version 2>&1 | head -1)"
+else
+    warn "Java not installed — run: sudo ./wsl/setup-java.sh"
+fi
+
+# --- 9. Python check ---
+echo ""
+echo ">>> Python:"
+if command -v python3 &>/dev/null; then
+    info "Python found — $(python3 --version 2>&1)"
+    if command -v pip3 &>/dev/null; then
+        info "pip3 available"
+    else
+        warn "pip3 not found — run: sudo ./wsl/setup-python.sh"
+    fi
+else
+    warn "Python not installed — run: sudo ./wsl/setup-python.sh"
+fi
+
 echo ""
 if [[ "$INSTALL_ZSH" == true ]]; then
     info "Bootstrap complete! Restart your terminal to use Zsh."
@@ -193,5 +216,7 @@ else
 fi
 echo ""
 echo "Next steps:"
+echo "  sudo ./wsl/setup-java.sh         # Install JDK 17 + 21 + Maven"
+echo "  sudo ./wsl/setup-python.sh       # Install pip, venv, pipx"
 echo "  sudo ./wsl/mount-pcloud.sh       # Mount pCloud P: drive"
 echo "  ./wsl/setup-vscode.sh            # Install VS Code extensions"
