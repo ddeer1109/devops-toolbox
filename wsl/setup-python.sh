@@ -102,5 +102,18 @@ echo ""
 echo "  # Install CLI tools globally (isolated)"
 echo "  pipx install httpie"
 echo "  pipx install black"
+# --- Add python/py aliases ---
+ALIAS_FILE="/etc/profile.d/python-aliases.sh"
+cat > "$ALIAS_FILE" <<'ALIASEOF'
+# Set by devops-toolbox/wsl/setup-python.sh
+alias python=python3
+alias py=python3
+alias pip=pip3
+ALIASEOF
+info "Aliases configured in $ALIAS_FILE (python, py, pip)"
+
+echo ""
+echo "NOTE: Open a new terminal or run 'source $ALIAS_FILE'"
+echo "      to use 'py' and 'python' aliases."
 echo ""
 info "Done."
