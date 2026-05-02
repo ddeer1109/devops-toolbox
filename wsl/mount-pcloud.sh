@@ -4,7 +4,16 @@
 #
 # pCloud on Windows maps as a virtual drive (default P:).
 # WSL doesn't auto-mount virtual drives — only physical ones (C:, D:).
-# This script mounts it manually and optionally persists via /etc/fstab.
+# This script mounts it manually and prints fstab guidance.
+#
+# RECOMMENDED FOR ONGOING USE: add an /etc/fstab entry instead of running this
+# script every WSL boot. With systemd=true in /etc/wsl.conf the mount happens
+# at boot, before any user shell — no sudo prompt in normal flow.
+# See fstab-pcloud.recipe.md in this folder.
+#
+# This script remains useful for:
+#   - First-time setup / verifying pCloud is reachable from WSL
+#   - Manual remount when fstab failed (e.g., pCloud not running at WSL boot)
 #
 # Prerequisites:
 #   - pCloud Desktop installed on Windows and running

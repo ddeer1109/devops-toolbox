@@ -115,7 +115,11 @@ python3 -m venv .venv && source .venv/bin/activate
 
 ### Mount pCloud Drive
 
-pCloud uses a virtual drive (default `P:`) that WSL doesn't auto-mount. This script mounts it and shows how to persist via fstab.
+pCloud uses a virtual drive (default `P:`) that WSL doesn't auto-mount. Two options:
+
+**Recommended (auto-mount at WSL boot):** add an `/etc/fstab` entry. With `systemd=true` in `/etc/wsl.conf` the mount happens during init, before any user shell — no sudo prompt in the normal flow. See [`fstab-pcloud.recipe.md`](fstab-pcloud.recipe.md).
+
+**First-time setup / manual remount:**
 
 ```bash
 sudo ./wsl/mount-pcloud.sh        # Mounts P: at /mnt/p
@@ -123,6 +127,32 @@ sudo ./wsl/mount-pcloud.sh Q      # Custom drive letter
 ```
 
 After mounting, pCloud files are at `/mnt/p/`. Useful for cross-workspace data portability.
+
+## WSL pipeline bootstrap pattern
+
+For projects that need "open WSL → mount vault → wait for Docker → start project pipeline + post-tasks unattended," combine three pieces from this folder:
+
+| Piece | Role |
+|---|---|
+| `fstab-pcloud.recipe.md` | One-line `/etc/fstab` entry — mounts the vault at WSL boot |
+| [`wait-for-docker.sh`](wait-for-docker.sh) | Polls `docker info` with timeout — for projects that need Docker before they can start |
+| [`bashrc-snippet.sh`](bashrc-snippet.sh) | Source from `~/.bashrc` — handles mount fallback + lock'd background invocation of a project-specific bootstrap command |
+
+`bashrc-snippet.sh` is parameterized via env vars (`WSL_BOOTSTRAP_VAULT_MOUNT`, `WSL_BOOTSTRAP_PROJECT_CMD`, etc.) so any project can plug in. See the snippet header for the full env-var contract and an example `~/.bashrc` block.
+
+**Reference implementation:** [`kafka-streams-learning/scripts/wsl_bootstrap.sh`](https://github.com/ddeer1109/kafka-streams-learning) — a thin project-specific orchestrator that calls `wait-for-docker.sh` from this folder, then starts its own pipeline. The bashrc snippet wires the two together: mount → fork project bootstrap in background → user gets a usable shell immediately while Kafka and digest spin up in the background.
+
+### Why this split?
+
+The mount, the docker wait, and the lock'd background pattern are **WSL-generic** — every WSL pipeline project will need them. Project-specific orchestration (which `docker-compose` to start, which Python script to run for post-tasks) is **per-project**. Keeping them separate means a new project gets the boot story for free and only writes the small project-specific glue.
+
+### Common failure modes
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Sudo password prompt on every shell open | fstab entry missing or syntax error | Apply `fstab-pcloud.recipe.md` and run `sudo mount -a` |
+| Bootstrap fires but hangs invisibly | Sudo prompt in a hidden (server-side) shell | Always pair this snippet with fstab — keeps the mount fast and visible-prompt-free |
+| Lock file persists across `wsl --shutdown` | `/tmp` is ext4 (not tmpfs) on this WSL | Snippet's stale-lock detection (mtime vs `/proc/1`) handles this automatically |
 
 ### VS Code Extensions
 
